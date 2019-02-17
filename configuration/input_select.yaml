@@ -1,0 +1,17 @@
+wants_mv_co2:
+  name: Ventilatie gewenst (CO2)
+  options:
+    - Hoog
+    - Middel
+    - Laag
+  initial: Laag
+  icon: mdi:home
+
+wants_mv_hum_bdk:
+  name: Ventilatie gewenst (badkamer)
+  options:
+    - Hoog
+    - Middel
+    - Laag
+  initial: Laag
+  icon: mdi:water

@@ -1,0 +1,10 @@
+alias: 'record cumulative enery usage to midnight'
+trigger:
+  - platform: time
+    at: "00:00:01"
+action:
+  service: mqtt.publish
+  data_template:
+    topic: 'ha/cum_energy_usage_prior'
+    retain: true
+    payload: '{"day_1":"{{((states.sensor.Huidig_verbruik.attributes["powerConsumptionHighTariff"] / 1000)  + (states.sensor.Huidig_verbruik.attributes["powerConsumptionLowTariff"] / 1000)) | round(1) }}"}' 

@@ -1,0 +1,15 @@
+alias: 049 - Set ventilation to low
+trigger:
+  platform: state
+  entity_id: sensor.wants_mv
+condition:
+  condition: state
+  entity_id: sensor.wants_mv
+  state: 'low'
+action:
+  - service: switch.turn_off
+    entity_id: 
+      - switch.havc_high
+  - service: switch.turn_off
+    entity_id:
+      - switch.havc_middle

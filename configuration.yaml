@@ -1,0 +1,272 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret latitude
+  longitude: !secret longitude
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 0
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Amsterdam
+  # Customization file
+  customize: !include customize.yaml
+
+
+# Enables the frontend
+frontend:
+
+# Enables configuration UI
+config:
+
+http:
+  # Secrets are defined in the file secrets.yaml
+  api_password: !secret http_password
+  # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+  base_url: home.pim.design:443
+  ssl_certificate: /etc/letsencrypt/live/home.pim.design/fullchain.pem
+  ssl_key: /etc/letsencrypt/live/home.pim.design/privkey.pem
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# Example configuration.yaml entry
+recorder:
+  purge_keep_days: 2
+  purge_interval: 1
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+# Weather prediction
+sensor:
+  - platform: yr
+  - platform: customRest
+    resource: 'https://blok61.openremote.io/blok61/asset/query'
+    method: 'POST'
+    name: Blok61
+    refresh_token: !secret blok61_refresh_token
+    value_template: '{{value_json["name"]}}'
+    scan_interval: 60
+    hidden: true
+    force_update: true
+    
+  - platform: template
+    sensors:
+      living_temp:
+        friendly_name: 'Woonkamer temperatuur'
+        value_template: '{{ states.sensor.blok61.attributes.Livingroom_temperature | round(1)}}'
+        unit_of_measurement: "°C"
+      bath_temp:
+        friendly_name: 'Badkamer temperatuur'
+        value_template: '{{ states.sensor.blok61.attributes.Bathroom_temperature | round(1)}}'
+        unit_of_measurement: "°C"
+      bed_temp:
+        friendly_name: 'Slaapkamer temperatuur'
+        value_template: '{{ states.sensor.blok61.attributes.Bedroom_temperature | round(1)}}'
+        unit_of_measurement: "°C"
+      living_humidity:
+        friendly_name: 'Woonkamer luchtvochtigheid'
+        value_template: '{{ states.sensor.blok61.attributes.Livingroom_humidity | round(0)}}'
+        unit_of_measurement: "%"
+      bath_humidity:
+        friendly_name: 'Badkamer luchtvochtigheid'
+        value_template: '{{ states.sensor.blok61.attributes.Bathroom_humidity | round(0)}}'
+        unit_of_measurement: "%"
+      bed_humidity:
+        friendly_name: 'Slaapkamer luchtvochtigheid'
+        value_template: '{{ states.sensor.blok61.attributes.Bedroom_humidity | round(0)}}'
+        unit_of_measurement: "%"
+      living_co2:
+        friendly_name: 'Woonkamer CO2'
+        value_template: '{{ states.sensor.blok61.attributes["Livingroom_CO2"] | round(0)}}'
+        unit_of_measurement: "ppm"
+      bed_co2:
+        friendly_name: 'Slaapkamer CO2'
+        value_template: '{{ states.sensor.blok61.attributes["Bedroom_CO2"] | round(0)}}'
+        unit_of_measurement: "ppm"
+      power_consumption_low_tariff:
+        friendly_name: 'Totaal verbruik laag'
+        value_template: '{{ (states.sensor.Huidig_verbruik.attributes["powerConsumptionLowTariff"] / 1000) | round(1)}}'
+        unit_of_measurement: "kWh"
+      power_consumption_high_tariff:
+        friendly_name: 'Totaal verbruik hoog'
+        value_template: '{{ (states.sensor.Huidig_verbruik.attributes["powerConsumptionHighTariff"] / 1000) | round(1)}}'
+        unit_of_measurement: "kWh"
+      power_production_low_tariff:
+        friendly_name: 'Totaal productie laag'
+        value_template: '{{ (states.sensor.Huidig_verbruik.attributes["powerProductionLowTariff"] / 1000) | round(1)}}'
+        unit_of_measurement: "kWh"
+      power_production_high_tariff:
+        friendly_name: 'Totaal productie hoog'
+        value_template: '{{ (states.sensor.Huidig_verbruik.attributes["powerProductionHighTariff"] / 1000) | round(1)}}'
+        unit_of_measurement: "kWh"
+      current_power_production:
+        friendly_name: 'Huidige productie'
+        value_template: '{{ states.sensor.Huidig_verbruik.attributes["CurrentPowerProduction"] }}'
+        unit_of_measurement: "watt"
+      energy_usage_today:
+        value_template: '{%- if not (is_state("sensor.power_consumption_high_tariff","unknown") or is_state("sensor.energy_usage_prior","unknown") )-%}  {{ (((states.sensor.power_consumption_high_tariff.state | float) + (states.sensor.power_consumption_low_tariff.state | float)) - (states.sensor.energy_usage_prior.state | float)) | max (0) | round(1) }} {%- endif -%}' ## ensure calc is no lower than zero!
+        friendly_name: 'Energy usage today'
+        unit_of_measurement: 'kWh'
+      energy_production_today:
+        value_template: '{%- if not (is_state("sensor.power_production_high_tariff","unknown") or is_state("sensor.energy_production_prior","unknown") )-%}  {{ (((states.sensor.power_production_high_tariff.state | float) + (states.sensor.power_production_low_tariff.state | float)) - (states.sensor.energy_production_prior.state | float)) | max (0) | round(1) }} {%- endif -%}' ## ensure calc is no lower than zero!
+        friendly_name: 'Energy production today'
+        unit_of_measurement: 'kWh'
+      wants_mv:
+        value_template: "{%- if is_state('input_select.wants_mv_co2', 'Hoog') or is_state('input_select.wants_mv_hum_bdk', 'Hoog') -%}high{%- elif is_state('input_select.wants_mv_co2', 'Middel') or is_state('input_select.wants_mv_hum_bdk', 'Middel') -%}medium{%- else -%}low{%- endif -%}"
+        friendly_name: 'Ventilatie snelheid'
+        entity_id:
+          - input_select.wants_mv_co2
+          - input_select.wants_mv_hum_bdk
+      total_power_blok:
+        friendly_name: 'Verbruik Blok'
+        value_template: '{{ states.sensor.blok61.attributes.Total_power | round(0)}}'
+        unit_of_measurement: 'watt'
+
+
+  - platform: mqtt
+    name: "Huidig verbruik"
+    state_topic: "/energy/p1"
+    unit_of_measurement: 'watt'
+    value_template: "{{ value_json.CurrentPowerConsumption }}"
+    json_attributes:
+      - powerConsumptionLowTariff
+      - powerConsumptionHighTariff
+      - powerProductionLowTariff
+      - powerProductionHighTariff
+      - CurrentPowerConsumption
+      - CurrentPowerProduction
+
+  - platform: mqtt
+    state_topic: 'ha/cum_energy_usage_prior'
+    name: 'energy_usage_prior'
+    unit_of_measurement: 'kWh'
+    value_template: '{{ value_json.day_1 }}' 
+    hidden: true
+  - platform: mqtt
+    state_topic: 'ha/cum_energy_production_prior'
+    name: 'energy_production_prior'
+    unit_of_measurement: 'kWh'
+    value_template: '{{ value_json.day_1 }}'
+    hidden: true
+  - platform: mqtt
+    name: "temp_water_shower"
+    state_topic: "/temperatures/shower"
+    unit_of_measurement: '°C'
+    value_template: "{{ value_json.waterShowerTemp }}"
+
+binary_sensor:
+  - platform: template
+    sensors:
+      kitchen_movement:
+        friendly_name: 'Kitchen movement'
+        device_class: 'motion'
+        value_template: >- 
+          {{ states.sensor.blok61.attributes["Kitchen_motion"]}}
+      living_movement:
+        friendly_name: 'Living room movement'
+        device_class: 'motion'
+        value_template: >-
+          {{ states.sensor.blok61.attributes["Livingroom_motion"]}}
+      bedroom_movement:
+        friendly_name: 'Bedroom movement'
+        device_class: 'motion'
+        value_template: >-
+          {{ states.sensor.blok61.attributes["Bedroom_motion"]}}
+      hallway_movement:
+        friendly_name: 'Hallway movement'
+        device_class: 'motion'
+        value_template: >-
+          {{ states.sensor.blok61.attributes["Hallway_motion"]}}
+      bathroom_movement:
+        friendly_name: 'Bathroom movement'
+        device_class: 'motion'
+        value_template: >-
+          {{ states.sensor.blok61.attributes["Bathroom_motion"]}}
+
+switch:
+  - platform: mqtt
+    name: "HAVC middle"
+    state_topic: "stat/fancontrol/POWER1"
+    command_topic: "cmnd/fancontrol/POWER1"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+  - platform: mqtt
+    name: "HAVC high"
+    state_topic: "stat/fancontrol/POWER2"
+    command_topic: "cmnd/fancontrol/POWER2"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+
+media_player:
+  - platform: braviatv
+    host: 192.168.2.11
+
+# Text to speech
+tts:
+  - platform: google
+
+# Example configuration.yaml entry
+google_assistant:
+  project_id: 'koppeling-ha'
+  api_key: !secret googleAssistantAPIKey
+  exposed_domains:
+    - light
+    - switch
+
+# Cloud
+cloud:
+
+# Example configuration.yaml entry
+mqtt:
+  password: !secret mqqtpassword
+
+#KNX
+knx:
+  tunneling:
+    host: '192.168.2.27'
+    port: 3671
+    local_ip: '192.168.2.8'
+  fire_event: True
+  fire_event_filter: ["*/*/*"]
+
+influxdb:
+  host: 192.168.2.8
+  include:
+    domains:
+      - sensor
+
+group: !include groups.yaml
+automation: !include_dir_list configuration/automations/
+input_select: !include configuration/input_select.yaml
+script: !include scripts.yaml
+
+# iOS
+ios:

@@ -1,0 +1,125 @@
+default_view:
+  name: "Verlichting"
+  view: yes
+  entities:
+    - group.lighting_living
+    - group.lighting_general
+    - group.lighting_bedroom
+
+temperature_view:
+  view: yes
+  name: Klimaat
+  entities:
+    - group.living_room
+    - group.bedroom
+    - group.bathroom
+    - group.ventilation
+
+energy_view:
+  view: yes
+  name: Energiemeter
+  entities:
+    - group.energy_current
+    - group.energy_data
+
+media_view:
+  view: yes
+  name: Media
+  entities:
+    - media_player.denon_avrx2000
+    - media_player.kodi_kodilocal
+    - media_player.living_room_speaker
+    - media_player.living_room_tv
+    - media_player.sony_bravia_tv
+
+security_view:
+  view: yes
+  name: Beveiliging
+  entities:
+    - group.movement_sensors
+
+config_view:
+  view: yes
+  name: Automatisering
+  entities:
+    - group.all_automations
+    - group.all_scripts
+
+lighting_living:
+  name: "Woonkamer"
+  entities: 
+    - light.hue_ambiance_lamp_3
+    - light.color_temperature_light_1_2
+    - light.color_temperature_light_1_3
+
+lighting_bedroom:
+  name: "Slaapkamer"
+  entities: 
+    - light.color_temperature_light_1
+    - switch.tradfri_control_outlet
+
+lighting_general:
+  name: "Algemeen"
+  entities:
+    - light.living_room
+    - light.bedroom
+    - light.hallway
+
+living_room:
+  name: "Living room"
+  entities: 
+    - sensor.living_temp
+    - sensor.living_humidity
+    - sensor.living_co2
+    - binary_sensor.living_motion
+
+bedroom:
+  name: "Bedroom"
+  entities:
+    - sensor.bed_temp
+    - sensor.bed_humidity
+    - sensor.bed_co2
+    - binary_sensor.bedroom_motion
+bathroom:
+  name: 'Bathroom'
+  entities:
+    - sensor.bath_temp
+    - sensor.bath_humidity
+    - binary_sensor.bathroom_motion
+    - sensor.temp_water_shower
+
+energy_current:
+  name: "Huidig verbruik / opbrengst"
+  entities:
+    - sensor.Huidig_verbruik
+    - sensor.current_power_production
+    - sensor.energy_usage_today
+    - sensor.energy_production_today
+    - sensor.total_power_blok
+
+energy_data:
+  name: "Meterstanden"
+  entities:
+    - sensor.power_consumption_low_tariff
+    - sensor.power_consumption_high_tariff
+    - sensor.power_production_low_tariff
+    - sensor.power_production_high_tariff
+    - sensor.energy_production_prior
+    - sensor.energy_usage_prior
+
+
+ventilation:
+  name: "Ventilatie"
+  entities:
+    - switch.havc_high
+    - switch.havc_middle
+    - sensor.wants_mv
+
+movement_sensors:
+  name: "Bewegingssensoren"
+  entities:
+    - binary_sensor.bathroom_movement
+    - binary_sensor.bedroom_movement
+    - binary_sensor.hallway_movement
+    - binary_sensor.kitchen_movement
+    - binary_sensor.living_movement

@@ -1,0 +1,11 @@
+alias: Ventilation based on CO2
+trigger:
+  - platform: state
+    entity_id: sensor.living_co2
+  - platform: state
+    entity_id: sensor.bed_co2
+action:
+  service: input_select.select_option
+  data_template:
+    entity_id: input_select.wants_mv_co2
+    option: '{%- if ((states.sensor.living_co2.state | float >= 1000) or (states.sensor.bed_co2.state | float >= 1000)) -%}Hoog{%- elif ((states.sensor.living_co2.state | float >= 700) or (states.sensor.bed_co2.state | float >= 700)) -%}Middel{%- else -%}Laag{%- endif -%}'
