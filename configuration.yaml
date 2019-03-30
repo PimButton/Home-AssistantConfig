@@ -24,7 +24,7 @@ http:
   # Secrets are defined in the file secrets.yaml
   api_password: !secret http_password
   # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
-  base_url: home.pim.design:443
+  base_url: https://home.pim.design:8123
   ssl_certificate: /etc/letsencrypt/live/home.pim.design/fullchain.pem
   ssl_key: /etc/letsencrypt/live/home.pim.design/privkey.pem
 
@@ -165,13 +165,11 @@ sensor:
     name: 'energy_usage_prior'
     unit_of_measurement: 'kWh'
     value_template: '{{ value_json.day_1 }}' 
-    hidden: true
   - platform: mqtt
     state_topic: 'ha/cum_energy_production_prior'
     name: 'energy_production_prior'
     unit_of_measurement: 'kWh'
     value_template: '{{ value_json.day_1 }}'
-    hidden: true
   - platform: mqtt
     name: "temp_water_shower"
     state_topic: "/temperatures/shower"
@@ -244,6 +242,12 @@ google_assistant:
 # Cloud
 cloud:
 
+homeconnect:
+  client_id: !secret homeconnect_client_id
+  client_secret: !secret homeconnect_client_secret
+
+system_health:
+
 # Example configuration.yaml entry
 mqtt:
   password: !secret mqqtpassword
@@ -251,7 +255,7 @@ mqtt:
 #KNX
 knx:
   tunneling:
-    host: '192.168.2.27'
+    host: '192.168.2.90'
     port: 3671
     local_ip: '192.168.2.8'
   fire_event: True
