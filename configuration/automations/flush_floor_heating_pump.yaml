@@ -1,0 +1,13 @@
+id: Switch floor heater pump on for 2 hours at midnight
+alias: Switch floor heater pump on for 2 hours at midnight
+trigger: 
+  platform: time
+  at: "00:01:00"
+action:
+  - service: homeassistant.turn_on
+    entity_id: 
+      - switch.tradfri_outlet
+  - delay: 02:00:00
+  - service: homeassistant.turn_off
+    entity_id: 
+      - switch.tradfri_outlet

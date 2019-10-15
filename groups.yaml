@@ -56,6 +56,7 @@ lighting_bedroom:
   name: "Slaapkamer"
   entities: 
     - light.color_temperature_light_1
+    - light.color_temperature_light_1_4
     - switch.tradfri_control_outlet
 
 lighting_general:
@@ -114,6 +115,7 @@ ventilation:
     - switch.havc_high
     - switch.havc_middle
     - sensor.wants_mv
+    - switch.tradfri_outlet
 
 movement_sensors:
   name: "Bewegingssensoren"

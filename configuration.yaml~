@@ -252,10 +252,10 @@ homeconnect:
   client_secret: !secret homeconnect_client_secret
 
 tuya:
-  username: pimknops@gmail.com
-  password: Klimaat2019
-  country_code: 31
-  platform: smart_life
+  username: '0641231777'
+  password: 'Klimaat2019'
+  country_code: '31'
+  platform: 'tuya'
 
 
 system_health:
