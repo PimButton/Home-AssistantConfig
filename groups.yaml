@@ -92,7 +92,7 @@ bathroom:
 energy_current:
   name: "Huidig verbruik / opbrengst"
   entities:
-    - sensor.Huidig_verbruik
+    - sensor.huidig_verbruik
     - sensor.current_power_production
     - sensor.energy_usage_today
     - sensor.energy_production_today
