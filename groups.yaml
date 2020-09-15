@@ -5,6 +5,7 @@ default_view:
     - group.lighting_living
     - group.lighting_general
     - group.lighting_bedroom
+    - group.lighting_hall
 
 temperature_view:
   view: yes
@@ -48,16 +49,21 @@ config_view:
 lighting_living:
   name: "Woonkamer"
   entities: 
-    - light.hue_ambiance_lamp_3
-    - light.color_temperature_light_1_2
-    - light.color_temperature_light_1_3
+    - light.plafond_woonkamer
+    - light.keuken
+    - light.bol_woonkamer
 
 lighting_bedroom:
   name: "Slaapkamer"
   entities: 
-    - light.color_temperature_light_1
-    - light.color_temperature_light_1_4
+    - light.plafond_slaapkamer
     - switch.tradfri_control_outlet
+
+lighting_hall:
+  name: "Hal"
+  entities:
+    - light.plafond_hal
+
 
 lighting_general:
   name: "Algemeen"

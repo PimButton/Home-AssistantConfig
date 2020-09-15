@@ -22,7 +22,6 @@ config:
 
 http:
   # Secrets are defined in the file secrets.yaml
-  api_password: !secret http_password
   # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
   base_url: https://home.pim.design:8123
   ssl_certificate: /etc/letsencrypt/live/home.pim.design/fullchain.pem
@@ -70,43 +69,10 @@ sensor:
     refresh_token: !secret blok61_refresh_token
     value_template: '{{value_json["name"]}}'
     scan_interval: 60
-    hidden: true
     force_update: true
     
   - platform: template
     sensors:
-      living_temp:
-        friendly_name: 'Woonkamer temperatuur'
-        value_template: '{{ states.sensor.blok61.attributes.Livingroom_temperature | round(1)}}'
-        unit_of_measurement: "°C"
-      bath_temp:
-        friendly_name: 'Badkamer temperatuur'
-        value_template: '{{ states.sensor.blok61.attributes.Bathroom_temperature | round(1)}}'
-        unit_of_measurement: "°C"
-      bed_temp:
-        friendly_name: 'Slaapkamer temperatuur'
-        value_template: '{{ states.sensor.blok61.attributes.Bedroom_temperature | round(1)}}'
-        unit_of_measurement: "°C"
-      living_humidity:
-        friendly_name: 'Woonkamer luchtvochtigheid'
-        value_template: '{{ states.sensor.blok61.attributes.Livingroom_humidity | round(0)}}'
-        unit_of_measurement: "%"
-      bath_humidity:
-        friendly_name: 'Badkamer luchtvochtigheid'
-        value_template: '{{ states.sensor.blok61.attributes.Bathroom_humidity | round(0)}}'
-        unit_of_measurement: "%"
-      bed_humidity:
-        friendly_name: 'Slaapkamer luchtvochtigheid'
-        value_template: '{{ states.sensor.blok61.attributes.Bedroom_humidity | round(0)}}'
-        unit_of_measurement: "%"
-      living_co2:
-        friendly_name: 'Woonkamer CO2'
-        value_template: '{{ states.sensor.blok61.attributes["Livingroom_CO2"] | round(0)}}'
-        unit_of_measurement: "ppm"
-      bed_co2:
-        friendly_name: 'Slaapkamer CO2'
-        value_template: '{{ states.sensor.blok61.attributes["Bedroom_CO2"] | round(0)}}'
-        unit_of_measurement: "ppm"
       power_consumption_low_tariff:
         friendly_name: 'Totaal verbruik laag'
         value_template: '{{ (states.sensor.huidig_verbruik.attributes["powerConsumptionLowTariff"] / 1000) | round(1)}}'
@@ -175,6 +141,49 @@ sensor:
     state_topic: "/temperatures/shower"
     unit_of_measurement: '°C'
     value_template: "{{ value_json.waterShowerTemp }}"
+
+  - platform: mqtt
+    name: "living_temp"
+    state_topic: "/climate/living/temp"
+    value_template: '{{value | round(1) }}'
+    unit_of_measurement: '  C'
+  - platform: mqtt
+    name: "living_co2"
+    state_topic: "/climate/living/CO2"
+    value_template: '{{(float(value) * 1000000) | round(0) }}'
+    unit_of_measurement: '  PPM'
+  - platform: mqtt
+    name: "living_humidity"
+    state_topic: "/climate/living/hum"
+    value_template: '{{value | round(0) }}'
+    unit_of_measurement: '  %'
+  - platform: mqtt
+    name: "bed_temp"
+    state_topic: "/climate/bed/temp"
+    value_template: '{{value | round(1) }}'
+    unit_of_measurement: '  C'
+  - platform: mqtt
+    name: "bed_co2"
+    state_topic: "/climate/bed/CO2"
+    value_template: '{{(float(value) * 1000000) | round(0) }}'
+    unit_of_measurement: '  PPM'
+  - platform: mqtt
+    name: "bed_humidity"
+    state_topic: "/climate/bed/hum"
+    value_template: '{{value | round(0) }}'
+    unit_of_measurement: '  %'
+  - platform: mqtt
+    name: "bath_temp"
+    state_topic: "/climate/bath/temp"
+    value_template: '{{value | round(1) }}'
+    unit_of_measurement: '  C'
+  - platform: mqtt
+    name: "bath_humidity"
+    state_topic: "/climate/bath/hum"
+    value_template: '{{value | round(0) }}'
+    unit_of_measurement: '  %'
+    
+
 
 binary_sensor:
   - platform: template
@@ -252,12 +261,6 @@ homeconnect:
   client_id: !secret homeconnect_client_id
   client_secret: !secret homeconnect_client_secret
 
-tuya:
-  username: pimknops@gmail.com
-  password: Klimaat2019
-  country_code: 31
-  platform: smart_life
-
 
 system_health:
 
@@ -274,13 +277,17 @@ knx:
   fire_event: True
   fire_event_filter: ["*/*/*"]
 
-influxdb:
-  host: 192.168.2.8
-  include:
-    domains:
-      - sensor
-      - binary_sensor
+# influxdb:
+#   host: 192.168.2.8
+#   include:
+#     domains:
+#       - sensor
+#       - binary_sensor
 
+
+slide:
+  username: !secret slide_username
+  password: !secret slide_password
 
 homekit:
 
@@ -293,3 +300,7 @@ script: !include scripts.yaml
 
 # iOS
 ios:
+
+default_config:
+
+
