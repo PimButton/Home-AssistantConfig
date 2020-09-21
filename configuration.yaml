@@ -182,8 +182,21 @@ sensor:
     state_topic: "/climate/bath/hum"
     value_template: '{{value | round(0) }}'
     unit_of_measurement: '  %'
-    
-
+  - platform: mqtt
+    name: "bath_bat"
+    state_topic: "/climate/bath/bat"
+    value_template: '{{value | round(1) }}'
+    unit_of_measurement: '  V'    
+  - platform: mqtt
+    name: "bed_bat"
+    state_topic: "/climate/bed/bat"
+    value_template: '{{value | round(1) }}'
+    unit_of_measurement: '  V'
+  - platform: mqtt
+    name: "living_bat"
+    state_topic: "/climate/living/bat"
+    value_template: '{{value | round(1) }}'
+    unit_of_measurement: '  V'
 
 binary_sensor:
   - platform: template
