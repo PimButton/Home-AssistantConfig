@@ -23,7 +23,6 @@ config:
 http:
   # Secrets are defined in the file secrets.yaml
   # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
-  base_url: https://home.pim.design:8123
   ssl_certificate: /etc/letsencrypt/live/home.pim.design/fullchain.pem
   ssl_key: /etc/letsencrypt/live/home.pim.design/privkey.pem
 
@@ -48,7 +47,6 @@ history:
 # Example configuration.yaml entry
 recorder:
   purge_keep_days: 2
-  purge_interval: 1
 
 # View all events in a logbook
 logbook:
@@ -73,26 +71,6 @@ sensor:
     
   - platform: template
     sensors:
-      power_consumption_low_tariff:
-        friendly_name: 'Totaal verbruik laag'
-        value_template: '{{ (states.sensor.huidig_verbruik.attributes["powerConsumptionLowTariff"] / 1000) | round(1)}}'
-        unit_of_measurement: "kWh"
-      power_consumption_high_tariff:
-        friendly_name: 'Totaal verbruik hoog'
-        value_template: '{{ (states.sensor.huidig_verbruik.attributes["powerConsumptionHighTariff"] / 1000) | round(1)}}'
-        unit_of_measurement: "kWh"
-      power_production_low_tariff:
-        friendly_name: 'Totaal productie laag'
-        value_template: '{{ (states.sensor.huidig_verbruik.attributes["powerProductionLowTariff"] / 1000) | round(1)}}'
-        unit_of_measurement: "kWh"
-      power_production_high_tariff:
-        friendly_name: 'Totaal productie hoog'
-        value_template: '{{ (states.sensor.huidig_verbruik.attributes["powerProductionHighTariff"] / 1000) | round(1)}}'
-        unit_of_measurement: "kWh"
-      current_power_production:
-        friendly_name: 'Huidige productie'
-        value_template: '{{ states.sensor.huidig_verbruik.attributes["CurrentPowerProduction"] }}'
-        unit_of_measurement: "watt"
       energy_usage_today:
         value_template: '{%- if not (is_state("sensor.power_consumption_high_tariff","unknown") or is_state("sensor.energy_usage_prior","unknown") )-%}  {{ (((states.sensor.power_consumption_high_tariff.state | float) + (states.sensor.power_consumption_low_tariff.state | float)) - (states.sensor.energy_usage_prior.state | float)) | max (0) | round(1) }} {%- endif -%}' ## ensure calc is no lower than zero!
         friendly_name: 'Energy usage today'
@@ -118,13 +96,31 @@ sensor:
     state_topic: "/energy/p1"
     unit_of_measurement: 'watt'
     value_template: "{{ value_json.CurrentPowerConsumption }}"
-    json_attributes:
-      - powerConsumptionLowTariff
-      - powerConsumptionHighTariff
-      - powerProductionLowTariff
-      - powerProductionHighTariff
-      - CurrentPowerConsumption
-      - CurrentPowerProduction
+  - platform: mqtt
+    name: "current_power_production"
+    state_topic: "/energy/p1"
+    unit_of_measurement: 'watt'
+    value_template: "{{ value_json.CurrentPowerProduction }}"  
+  - platform: mqtt
+    name: "power_consumption_low_tariff"
+    state_topic: "/energy/p1"
+    unit_of_measurement: 'kWh'
+    value_template: "{{ (value_json.powerConsumptionLowTariff / 1000) | round(1) }}"
+  - platform: mqtt
+    name: "power_consumption_high_tariff"
+    state_topic: "/energy/p1"
+    unit_of_measurement: 'watt'
+    value_template: "{{ (value_json.powerConsumptionHighTariff / 1000) | round(1) }}"
+  - platform: mqtt
+    name: "power_production_low_tariff"
+    state_topic: "/energy/p1"
+    unit_of_measurement: 'watt'
+    value_template: "{{ (value_json.powerProductionLowTariff / 1000) | round(1) }}"
+  - platform: mqtt
+    name: "power_production_high_tariff"
+    state_topic: "/energy/p1"
+    unit_of_measurement: 'watt'
+    value_template: "{{ (value_json.powerProductionHighTariff / 1000) | round(1) }}"
 
   - platform: mqtt
     state_topic: 'ha/cum_energy_usage_prior'
@@ -279,16 +275,18 @@ system_health:
 
 # Example configuration.yaml entry
 mqtt:
+  broker: 192.168.2.8
+  username: homeassistant
   password: !secret mqqtpassword
 
 #KNX
-knx:
-  tunneling:
-    host: '192.168.2.90'
-    port: 3671
-    local_ip: '192.168.2.8'
-  fire_event: True
-  fire_event_filter: ["*/*/*"]
+#knx:
+#  tunneling:
+#    host: '192.168.2.90'
+#    port: 3671
+#    local_ip: '192.168.2.8'
+#  fire_event: True
+#  fire_event_filter: ["*/*/*"]
 
 # influxdb:
 #   host: 192.168.2.8

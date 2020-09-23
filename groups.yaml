@@ -1,6 +1,6 @@
 default_view:
   name: "Verlichting"
-  view: yes
+#  view: yes
   entities:
     - group.lighting_living
     - group.lighting_general
@@ -8,7 +8,7 @@ default_view:
     - group.lighting_hall
 
 temperature_view:
-  view: yes
+#  view: yes
   name: Klimaat
   entities:
     - group.living_room
@@ -17,14 +17,14 @@ temperature_view:
     - group.ventilation
 
 energy_view:
-  view: yes
+#  view: yes
   name: Energiemeter
   entities:
     - group.energy_current
     - group.energy_data
 
 media_view:
-  view: yes
+#  view: yes
   name: Media
   entities:
     - media_player.denon_avrx2000
@@ -34,13 +34,13 @@ media_view:
     - media_player.sony_bravia_tv
 
 security_view:
-  view: yes
+#  view: yes
   name: Beveiliging
   entities:
     - group.movement_sensors
 
 config_view:
-  view: yes
+#  view: yes
   name: Automatisering
   entities:
     - group.all_automations
