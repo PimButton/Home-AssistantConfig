@@ -109,17 +109,17 @@ sensor:
   - platform: mqtt
     name: "power_consumption_high_tariff"
     state_topic: "/energy/p1"
-    unit_of_measurement: 'watt'
+    unit_of_measurement: 'kWh'
     value_template: "{{ (value_json.powerConsumptionHighTariff / 1000) | round(1) }}"
   - platform: mqtt
     name: "power_production_low_tariff"
     state_topic: "/energy/p1"
-    unit_of_measurement: 'watt'
+    unit_of_measurement: 'kWh'
     value_template: "{{ (value_json.powerProductionLowTariff / 1000) | round(1) }}"
   - platform: mqtt
     name: "power_production_high_tariff"
     state_topic: "/energy/p1"
-    unit_of_measurement: 'watt'
+    unit_of_measurement: 'kWh'
     value_template: "{{ (value_json.powerProductionHighTariff / 1000) | round(1) }}"
 
   - platform: mqtt

@@ -7,4 +7,4 @@ action:
   data_template:
     topic: 'ha/cum_energy_usage_prior'
     retain: true
-    payload: '{"day_1":"{{((states.sensor.huidig_verbruik.attributes["powerConsumptionHighTariff"] / 1000)  + (states.sensor.huidig_verbruik.attributes["powerConsumptionLowTariff"] / 1000)) | round(1) }}"}' 
+    payload: '{"day_1":"{{(float(states.sensor.power_consumption_low_tariff.state)  + float(states.sensor.power_consumption_high_tariff.state)) | round(1) }}"}'
